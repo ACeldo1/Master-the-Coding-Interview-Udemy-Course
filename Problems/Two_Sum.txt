@@ -1,0 +1,66 @@
+/*problem 1: Two Sum
+Given an array of integers, return the indices of the two numbers that will add up to the given target
+*/
+
+/*some conditions to consider
+1. we are only dealing with positive numbers in this problem
+2. a solution (pair that adds up to the target) is not guaranteed
+3. return null if thers is no solution
+4. only one possible pair will add up to the target
+5. no duplicate values
+*/
+
+/*
+approach 1: for each element / integer in the array, we compare it with the remaining elements in the array (only the elements that come after it) to find if we have a pair that adds up to the target
+runtime: O(N^2) (nested loops), space: O(1) (we don't need any additional data structures)
+
+approach 2: sort the array (direction doesn't matter, but we'll stick to ascending) and have two pointers, one on the left and the other on the right. we also keep track of the sum of the two elements that are currently pointed at. If the sum of both elements is greater than target value, then we decrement our right pointer so we can reduce the sum. If the sum is less than the target value, then we increment our left pointer to get closer to the target value. otherwise, we have our answer and return the corresponding indices.
+
+runtime: O(NLogN + N) (NLogN bc of the sorting, and N because of the loop afterwards) -> O(NLogN)
+space: O(N) bc we need an extra array / data structure to contain the original indices of the number
+as a side note, this solution would work better if there we duplicate values allowed
+
+approach 3: no need to sort the array, we leverage a hashmap bc of its useful lookup time (O(1)) We iterate through the array, adding key-value pairs to a map with the keys as the elements and the values as their indices. We iterate through the array a second time so that we can easily find the corresponding  integer that will add up with the current addend for the target value
+
+correction: this can be done in one pass which means its still O(N), but before adhering to big O rules, its reduced from O(2N) to O(N)
+
+runtime: O(2N) bc of two iterations of the array
+space: O(N) bc of the map
+*/
+
+/*solution with approach 2
+class Solution {
+	//approach 2
+	/*public int[] TwoSum(int[] nums, int target) {
+		HashMap<Integer,Integer> map = new HashMap<>(nums.length);
+		for(int i = 0; i < nums.length; ++i) map.put(nums[i], i);
+		Arrays.sort(nums); //sort the array
+		int left = 0, right = nums.length - 1, sum;
+		while(left < right) {
+			sum = nums[left] + nums[right];
+			if(sum > target) right--;
+			else if(sum < target) left++;
+			else return new int[]{ map.get(nums[left], map.get(nums[right]) };
+		}
+		return null;
+	}*/
+	
+	//approach 3
+	public int[] twoSum(int[] nums, int target) {
+        int index = 0;
+        Map<Integer, Integer> hm = new HashMap<Integer, Integer>();
+        for(int element : nums) {
+            if(hm.containsKey(target - element)) return new int[]{hm.get(target - element), index};
+            if(!hm.containsKey(element)) hm.put(element, index);
+            index++;
+        }
+        return new int[]{-1,-1};
+    }
+
+	public void main(String[] args) { //driver code
+		int[] test1 = TwoSum(new int[]{1, 3, 7, 9, 2}, 11) //should return 
+		int[] test2 = ;
+	}
+}
+
+*/

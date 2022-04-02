@@ -1,0 +1,72 @@
+/*
+notes:
+1. no negative integers since we are dealing with height
+2. there needs to be a difference of at least 2 units between left and right
+for example: if left idx is 1, right idx must be greater than 2 to trap water
+
+approach 1: (naive) disregard the first element and the last element bc by the outline of the problem, it would be impossible fot those to hold water. this problem becomes easier to solve if we deal with it in smaller pieces. to get max amount of rain for each index, we need to know the max height of both the left and right. in other words, the highest value between 0 and i (left) and i and height.length - 1 (right)
+once we know those two vals, we take the min of the two and subtract by height[i] resulting in the max amount of water we can hold at index i
+
+runtime: O(N^2) -> for every element (except the first and last), we basically iterate throughout the entire array to obtain both max values
+space: O(1) bc we don't create additional DS to use
+
+approach 2: an improvement of the approach #1
+what eats up so much time in the first approach is locating both max values
+instead of performing the searches for every single element, i decided to pass through the array twice, but instead only focusing on one direction each pass
+the first pass would only consider the left max and I'll use a variable to keep track of this leftMax, comparing with every element we iterate through. calculate the max amount of rain possible at index i by leftMax - height[i], assuming height[i] is less than leftMax.
+store each of these values in an array to use in conjunction with the next pass
+the second pass would do the same but start at the right (end)
+we would perform the same as iterating from the left, but with the extra step of keeping only one value for each index: the minimum of the current calc max amount of rain at index i or the one calculated from the left iteration
+finally, sum all the values from the array to get total trapped rainwater
+
+runtime: O(3N) -> O(N) bc we iterate through all the elements (minus the start and end) twice and to get the sum we iterate again
+space: O(N) we need an extra array / table to keep track of the calculated values
+*/
+
+class Solution {
+    //approach 1:
+//     public int maxHeight(int[] nums, int left, int right) {
+//         int max = 0;
+//         while(left < right) max = Math.max(max, nums[left++]);
+//         return max;
+//     }
+    
+//     public int trap(int[] height) {
+//         //edge cases
+//         if(height.length <= 2) return 0;
+        
+//         int totalRain = 0;
+//         for(int i = 1; i < height.length - 1; ++i) {
+//             int leftMax = maxHeight(height, 0, i);
+//             int rightMax = maxHeight(height, i + 1, height.length);
+//             if(height[i] < Math.min(leftMax, rightMax)) totalRain += Math.min(leftMax, rightMax) - height[i];
+//         }
+        
+//         return totalRain;
+//     }
+    
+    //approach 2:
+    public int trap(int[] height) {
+        //edge cases
+        if(height.length <= 2) return 0;
+        
+        int maxHeight = height[0], totalRain = 0;
+        int[] calcHeight = new int[height.length];
+        for(int i = 1; i < height.length - 1; ++i) {
+            calcHeight[i] = height[i] < maxHeight ? maxHeight - height[i] : 0;
+            // if(height[i] < maxHeight) calcHeight[i] = maxHeight - height[i];
+            // else calcHeight[i] = 0;
+            maxHeight = Math.max(maxHeight, height[i]);
+        }
+        maxHeight = height[height.length - 1];
+        for(int i = height.length - 2; i > 0; --i) {
+            calcHeight[i] = height[i] > maxHeight ? 0 : Math.min(calcHeight[i], maxHeight - height[i]); 
+            // if(height[i] > maxHeight) calcHeight[i] = 0;
+            // else calcHeight[i] = Math.min(calcHeight[i], maxHeight - height[i]);
+            maxHeight = Math.max(maxHeight, height[i]);
+        }
+        
+        for(int val: calcHeight) totalRain += val;
+        return totalRain;
+    }
+}

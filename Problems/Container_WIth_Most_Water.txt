@@ -1,0 +1,32 @@
+/*
+notes: we want the largest area possible so ->
+1. when comparing the two pointers, we want to change the pointer with the smallest value of the two
+2. we keep track of the max area as we move along the array
+3. since we are dealing with heights, negatives aren't possible
+4. having the two largest pillar DOES NOT GARUANTEE the largest max area
+
+apporach 1: use the two pointer approach and compare the values of left and right pillars
+everytime we change a pointer, we lose area of value smallerVal sq units, but we lose that in the hopes of gaining more area. thus, we only want to consider pillars that are larger than the previous pillars
+runtime: O(N) because we only iterate through the array once
+space: O(1) bc we don't require a data structure to help store any info
+*/
+class Solution {
+    public int maxArea(int[] height) {
+        int leftptr = 0, currentArea = 0, maxArea = 0, currentMin = 0, rightptr = height.length - 1;
+        while (leftptr < rightptr) {
+            currentMin = Math.min(height[leftptr], height[rightptr]); //smaller pillar
+            currentArea = (rightptr - leftptr) * currentMin; //bsaed on current pillars
+            maxArea = Math.max(maxArea, currentArea); //best result so far
+            
+            if(currentMin == height[leftptr]) { //change the left pillar
+                int preLeftShift = height[leftptr];
+                while(preLeftShift >= height[leftptr] && leftptr < rightptr) leftptr++;
+            } else { //change the right pillar
+                int preRightShift = height[rightptr];
+                while(preRightShift >= height[rightptr] && leftptr < rightptr) rightptr--;
+            }
+        }
+        
+        return maxArea;
+    }
+}
