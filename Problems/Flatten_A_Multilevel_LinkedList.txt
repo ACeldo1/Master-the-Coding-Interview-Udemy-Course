@@ -1,0 +1,97 @@
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node prev;
+    public Node next;
+    public Node child;
+};
+*/
+
+/*
+    approach 1: use a stack to record all nodes immediately after any nodes that has a child node for exploring, assuming it is a non null node
+    after we have reached the last node we continue iterating until the there aren't any more nodes with children in the current linked list, so we move back to the prev linked list and explore until there aren't any nodes left, and continue 
+    until we are at the end of the og linked list
+    runtime: O(N), we only encounter each node once
+    space: O(N), the stack will contain at most N / 2 nodes at a time, but it is still O(N) overall
+
+
+    approach 2: without using a stack, we can flow through the lists in constant space
+    when we are iterating through all the doubly linked lists, we are presented with two choices
+    if we don't have a child node, we continue iterating through the current linked list 
+    if we do have a child node, we must enter it and process the child nodes to connect them by connecting
+    the tail of the child LL to the next node of the current linked list
+    ex: we iterate in the parent LL until we reach node 2. At node 2, we enter the child LL
+	at node 6. From node 6, we iterate until we are at the end of the child LL, ignoring child ptrs for the moment
+	and once we reach the end, we connect the tail of the child linked list (node 8), to the node immediately after the current node
+	from the parent linked list (node 2), both pointers since they are doubly linked listss
+	1 -- 2 -- 3 -- 4 -- 5          1 -- 2 	      3 -- 4 -- 5 
+             |			--->	    |         |
+	     6 -- 7 -- 8		    |         |
+					    6 -- 7 -- 8
+
+	once we've connected both we exit the current instance (else statement most likely)
+	and continue with the doubly linked list, but our next node is now node 6 rather than node 3
+
+	runtime: O(N), at most we visit each nodes twice because of connecting the tail of the child
+	LL to the parent LL's next node, but O(2N) -> O(N)
+	space: O(1), there are no additional DS created
+*/
+
+class Solution {
+    //approach 1
+    public Node flatten(Node head) {
+        //edge cases
+        if(head == null) return null;
+        
+        Stack<Node> stack = new Stack<>();
+        stack.push(head);
+        while(!stack.isEmpty()) {
+            Node node = stack.pop();
+            while(node != null) {
+                if(node.child != null) { //we have found another doubly linked list
+                    if(node.next != null) stack.push(node.next); //if continue with this DLL, add next node to stack
+                    Node parent = node;
+                    node = node.child;
+                    parent.next = node;
+                    node.prev = parent;
+                    parent.child = null;
+                } else if(node.next == null && !stack.isEmpty()) { //if at the last node in DLL, connect to next node
+                    Node upcoming = stack.peek();
+                    node.next = upcoming;
+                    upcoming.prev = node;
+                    break;
+                } else node = node.next; //continue iterating through current DLL
+            }
+        }
+            
+        return head;
+    }
+
+    //approach 2
+    public Node flatten(Node head) {
+        //edge cases
+        if(head == null) return null;
+        
+        ListNode currNode = head;
+        while(currNode != null) {
+            if(currNode.child == null) {
+	        currNode = currNode.next;
+            } else {
+	    	ListNode tail = currNode.child;
+		while(tail.next != null) {
+		    tail = tail.next;
+		}
+		
+		tail.next = currNode.next;
+		if(tail.next != null) tail.next.prev = tail;
+
+		currNode.next = currNode.child;
+		currNode.next.prev = currNode;
+		currNode.child = null;
+            }
+        }
+            
+        return head;
+    }
+}
