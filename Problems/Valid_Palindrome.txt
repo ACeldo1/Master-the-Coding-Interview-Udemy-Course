@@ -1,0 +1,31 @@
+class Solution {
+    /*
+    approach 1: left and right pointer will continue moving towards the middle until they are at the middle. will use the string builder class to manipulate the string to remove non-alphanumeric characters and spaces. each pointer will move one at a time until we are at the middle (true), or both pointers are pointing at the different values
+    */
+    public boolean isPalindrome(String str) {
+        if(str.length() < 2) return true;
+        //without stringbuilder, i would remove the spaces and non-alphanumeric characters with the str split method
+        //ascii capital letters: 65 - 90; ascii lowercase letters: 97 - 122
+
+        str = str.trim().toLowerCase();
+        int left = 0, right = str.length() - 1, l_ascii, r_ascii;
+        char l_char, r_char;
+
+        while(left <= right) {
+            l_ascii = str.charAt(left); l_char = str.charAt(left);
+            r_ascii = str.charAt(right); r_char = str.charAt(right);
+            while((l_ascii < 48 || l_ascii > 57 && l_ascii < 97 || l_ascii > 122) && left < right) {
+                l_ascii = str.charAt(++left);
+                l_char = str.charAt(left);
+            }
+            while((r_ascii < 48 || r_ascii > 57 && r_ascii < 97 || r_ascii > 122) && left < right) {
+                r_ascii = str.charAt(--right);
+                r_char = str.charAt(right);
+            }
+            if(l_char != r_char) return false;
+            left++; right--;
+        }
+        
+        return true;
+    }
+}

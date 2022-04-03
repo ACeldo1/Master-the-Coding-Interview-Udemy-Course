@@ -21,6 +21,12 @@ finally, sum all the values from the array to get total trapped rainwater
 
 runtime: O(3N) -> O(N) bc we iterate through all the elements (minus the start and end) twice and to get the sum we iterate again
 space: O(N) we need an extra array / table to keep track of the calculated values
+
+after watching the udemy video, there is a way to do this with one pass and in constant space. think about:
+for every idx: 
+- what left and right max heights we have
+- moving the pointers based on what? size of the max values
+- when do we calculate amount of water? we operate on the smaller value
 */
 
 class Solution {

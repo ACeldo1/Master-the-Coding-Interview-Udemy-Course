@@ -1,0 +1,83 @@
+class Solution {
+    /*
+        First approach: using 2 stacks
+        for both strings:
+            if(character != #) push to stack
+            else pop stack
+        while the stacks are not empty, pop both until either it is empty(they are equal) or until a character is different(they are not equal)
+    */
+    //runtime O(N + M)
+    // public boolean backspaceCompare(String s, String t) {
+    //     Stack<Character> sStack = new Stack<Character>(), tStack = new Stack<Character>();
+    //     // for(int i = 0, j = 0; i < s.length() || j < t.length(); i++, j++) {
+    //     //     if(i < s.length()) {
+    //     //        if(s.charAt(i) != '#') sStack.push(s.charAt(i));
+    //     //        else if(!sStack.isEmpty()) sStack.pop();
+    //     //     }
+    //     //     if(j < t.length()) {
+    //     //         if(t.charAt(j) != '#') tStack.push(t.charAt(j));
+    //     //         else if(!tStack.isEmpty()) tStack.pop();
+    //     //     }
+    //     // }
+    //     for(char c : s.toCharArray()) {
+    //         if(c != '#') sStack.push(c);
+    //         else if(!sStack.isEmpty()) sStack.pop();
+    //     }
+    //     for(char c : t.toCharArray()) {
+    //         if(c != '#') tStack.push(c);
+    //         else if(!tStack.isEmpty()) tStack.pop();
+    //     }
+    //     if(sStack.size() != tStack.size()) return false;
+    //     while(!sStack.isEmpty() && !tStack.isEmpty()) {
+    //         if(sStack.pop() != tStack.pop()) return false;
+    //     }
+    //     return true;
+    // }
+    
+    /*
+        second approach: run through each string counting the number of backspaces and letters as well
+        only count the backspaces when there is at less than or an equal number of letters before
+    */
+    // public boolean backspaceCompare(String s, String t) {
+    //     if(s == null || t == null) return false;
+    //     Stack<Character> sStack = new Stack<Character>(), tStack = new Stack<Character>();
+    //     for(int i = 0, j = 0; i < s.length() || j < t.length(); i++, j++) {
+    //         if(i < s.length()) {
+    //            if(s.charAt(i) != '#') sStack.push(s.charAt(i));
+    //            else if(!sStack.isEmpty()) sStack.pop();
+    //         }
+    //         if(j < t.length()) {
+    //             if(t.charAt(j) != '#') tStack.push(t.charAt(j));
+    //             else if(!tStack.isEmpty()) tStack.pop();
+    //         }
+    //     }
+    //     if(sStack.size() != tStack.size()) return false;
+    //     while(!sStack.isEmpty() && !tStack.isEmpty()) {
+    //         if(sStack.pop() != tStack.pop()) return false;
+    //     }
+    //     return true;
+    // }
+    
+    /*
+    third approach: without using stacks -> O(1) space
+    we iterate throught the string, but we keep two pointers, a runner and another runner, but this one depends on the backspaces chars and is ususally slower. the runner will iterate through the string and whenever it encounters a backspace char, it calculates how many there are in sequence (in a loop?). the result of this operation will provide us with the new location for the slow pointer
+    the idea is that we want to keep the string we need to return in the first spaces of the string, from range (0, length - (number of backspace chars + replacement operations))
+    
+    after watching the udemy course, i realized that this was easier after approaching the strings in reverse
+    */
+    private String backspaced(char[] str) {
+        int i = str.length - 1, j = i, count = 0;
+        while(i >= 0) {
+            if(str[i] != '#') str[j--] = str[i--];
+            else {
+                count = 1;
+                while(--i >= 0 && count > 0) count = i >= 0 && str[i] == '#' ? count + 1 : count - 1;
+            }
+        }
+        return new String(Arrays.copyOfRange(str, j + 1, str.length));
+    }
+    
+    public boolean backspaceCompare(String s, String t) {
+        return s == null || t == null ? false : (backspaced(s.toCharArray())).equals(backspaced(t.toCharArray()));
+    }
+}

@@ -1,0 +1,104 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+
+/*
+notes:
+1. same as easier version, but with a given range
+2. 2 sols again, one with and the other without a stack
+
+approach 1: with stack
+keep track of the current index (for the nodes) and once we are within the range of [left, right],
+we begin to add to the stack. after we are out the range, we exit and at this point we know the node to the left of the new head and the node to the right of the new tail
+
+ex : 1 -> 2 -> 3 -> 4 -> 5      left = 2, right = 4
+          ^ -> ^ -> ^
+          
+1 is the left of the new head of the sub LL and 5 is the right of the new tail of the sub LL (if 5 wasn;t there, 4 would be the tail)
+connect them as we would a linked list and we are good to go
+
+approach 2: without stack
+we find the first node that must be reversed and then implement the same logic from the easier version of this question
+at every node that is involved in the reversal, we create a temp pointer that will save the rest of the list
+from getting lost, we also have a dummy node that acts as the new head of the sub LL as we continue through the LL, and once we are out of range, we are done.A
+however, there are some edge cases, including:
+- the reversal of the ENTIRE LL
+- if the reversal includes the head of the OG LL
+- if the reversal include the tail of the OG LL
+
+*/
+class Solution {
+    //approach 1
+//     public ListNode reverseBetween(ListNode head, int left, int right) {
+//         //edge case
+//         if(left == right || head.next == null) return head;
+        
+//         Stack<ListNode> stack = new Stack<>();
+//         int idx = 1;
+//         ListNode runner = head, dummy = new ListNode();
+//         dummy.next = head;
+//         while(idx != left) { //find the new tail of the sub LL
+//             dummy.next = runner;
+//             runner = runner.next;
+//             idx++;
+//         }
+        
+//         while(idx <= right) { //get all the nodes involved in the reversal
+//             stack.push(runner);
+//             runner = runner.next;
+//             idx++;
+//         }
+        
+//         ListNode leftNode = left == 1 ? stack.pop() : dummy.next;
+//         ListNode rightNode = runner;
+//         runner = leftNode;
+//         while(!stack.isEmpty()) {
+//             runner.next = stack.pop();
+//             runner = runner.next;
+//         }
+//         runner.next = rightNode;
+        
+//         return left == 1 ? leftNode : head;
+//     }
+    
+    //approach 2
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        //edge case
+        if(left == right || head.next == null) return head;
+        
+        int idx = 1;
+        ListNode dummyHead = new ListNode(), runner = head;
+        dummyHead.next = head; //created extra node to deal with edge case if OG head is in range
+        
+        //find the first nodes that needs to be swapped first
+        ListNode subHead = head;
+        while(idx != left) { //find the first node (new tail of sub LL)
+            dummyHead = dummyHead.next;
+            subHead = subHead.next;
+            idx++;
+        }
+        
+        runner = subHead.next; //the node before the tail node of the sub LL
+        
+        ListNode temp = null, newTail = dummyHead.next; //newTail connects the sub LL to the rest of the LL
+        while(idx < right) {
+            temp = runner.next;
+            runner.next = subHead;
+            subHead = runner;
+            runner = temp;
+            idx++;
+        }
+        
+        dummyHead.next = subHead; //dummyHead is the node right before node at value Left
+        newTail.next = runner; //connecting the subLL to the rest of the LL
+        
+        return left == 1 ? subHead : head; //if left != 1, head is good, else it is the tail of the sub LL
+    }
+}

@@ -1,0 +1,62 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+
+/*
+approach 1: using a stack, while the current node is not null, we push onto the stack
+once there aren't anymore nodes, the node at the top of the stack is the new head, and we form a new linked list with the rest of the nodes in the stack (pop until empty)
+runtime: O(2N) -> O(N) bc we iterate through the linked list of size N twice
+space: O(N) -> our stack will hold N nodes from the LL
+
+approach 2: use dummy nodes, start the dummy node pointing at the original head of the linked list
+as we iterate through the LL, we will have an operation that will be responsible for creating a temp node and saving the rest of the list that the curr node is pointing to and then cont until there aren't anymore nodes
+runtime: O(N), we iterate through all of the nodes in the LL to change the order / reverse
+space: O(1), we don't use additional DS for out solution, only some pointers that are constants
+*/
+class Solution {
+    //approach 1
+//     public ListNode reverseList(ListNode head) {
+//         if(head == null) return head;
+        
+//         Stack<ListNode> stack = new Stack<>();
+//         ListNode runner = head;
+//         while(runner != null) {
+//             stack.push(runner);
+//             runner = runner.next;
+//         }
+        
+//         runner = stack.pop();
+//         head = runner;
+//         while(!stack.isEmpty()) {
+//             runner.next = stack.pop();
+//             runner = runner.next;
+//         }
+//         runner.next = null;
+        
+//         return head;
+//     }
+    
+    //approach 2
+    public ListNode reverseList(ListNode head) {
+        if(head == null) return head;
+        
+        ListNode dummy = new ListNode(), runner = head, temp = null;
+        dummy.next = head;
+        runner = runner.next;
+        head.next = null;
+        while(runner != null) {
+            temp = runner.next;
+            runner.next = dummy.next;
+            dummy.next = runner;
+            runner = temp;
+        }
+        return dummy.next;
+    }
+}

@@ -1,0 +1,34 @@
+/*
+notes:
+1. we can either delete on character or none at all
+2. guaranteed a length of at least one with only lowercase English letters
+
+approach 1: two pointer approach, but we start from the middle
+if we have a string of odd length, both left and right start at length / 2
+else, left starts at length / 2 - 1 an right starts at length / 2
+we compare current chars to check for palindrome status, but we allow leeway for one pair that doesn; tmathc
+(in the form of a boolean var)
+when we encounter chars that are not equal, what char do we "delete"
+the char that is not equal to the prev char (for left, left + 1; for right, right - 1) is deleted and the othe is kept (both pointers move forward, but the boolean wild card has been used), unless both chars do not match up to the prev char (we return false)
+now, if we encounter another situation where the chars are not equal, we return false
+if we haven't returned false by this point, we return true (left < 0 and right > length - 1)
+
+runtime: O(N) -> we make a single pass through the array
+space: O(1) -> we don't utilize additional DS
+*/
+class Solution {
+    private boolean isPalindrome(String s, int left, int right, boolean freebie) {
+        while(left < right) {
+            if(!freebie && s.charAt(left) != s.charAt(right)) 
+                return isPalindrome(s.substring(0, left) + s.substring(left + 1), 0, s.length() - 2, true) 
+                    || isPalindrome(s.substring(0, right) + s.substring(right + 1), 0, s.length() - 2, true);
+            else if(freebie && s.charAt(left) != s.charAt(right)) return false;
+            left++; right--;
+        }
+        return true;
+    }
+    
+    public boolean validPalindrome(String s) {
+        return s.length() < 3 ? true : isPalindrome(s, 0, s.length() - 1, false);
+    }
+}
