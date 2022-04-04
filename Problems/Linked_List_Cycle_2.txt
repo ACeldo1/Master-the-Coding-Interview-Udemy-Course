@@ -1,0 +1,72 @@
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+/*
+notes:
+1. what happens when there are no nodes in the LL
+2. will we have a cycle of just one node (node points to itself)
+
+approach 1: iterate through the entire Linked List, keeping track of visited nodes with a table/map
+there are three possibele actions to take we check for:
+1. if we encounter a null value, we've reached the end of the list (and there are no cycles)
+2. if we enconuter a node that has already been visited (indicated by the table) we have a cycle and we return the visited node
+3. if the above two are not met, we continue iterating through the LL
+runtime: O(N) as we visited every node if there are no cycles (worst case)
+space: O(N), we store every node in the linked list at most (when there are no cycles) 
+
+approach 2: slow and fast pointers
+we iterate through the Linked List with 2 pointers, fast that moves 2x the amount slow does.
+if the fast pointer is null, we have no cycles.
+else if the slow pointer at any point is the same as the fast pointer, we have a cycle bc there is no end to this LL
+runtime: O(N), in the worst case, all nodes are involved in the cycle, so the fast pointer iterates through the LL twice O(2N) -> O(N)
+space: O(1), we don't use additional DS, only a fixed amount of pointers
+*/
+public class Solution {
+    //approach 1
+//     public ListNode detectCycle(ListNode head) {
+//         //edge case
+//         if(head == null) return null;
+//         // else if(head.next == head) return head;
+        
+//         ListNode runner = head;
+//         Set<ListNode> visited = new HashSet<>();
+//         while(runner != null) {
+//             if(visited.contains(runner)) return runner;
+//             visited.add(runner);
+//             runner = runner.next;
+//         }
+//         return runner;
+//     }
+    
+    //approach 2
+    //if the number of times 
+    public ListNode detectCycle(ListNode head) {
+        //edge cases
+        if(head == null) return null;
+        
+        ListNode slow = head, fast = slow;
+        int iterations = 0;
+        while(fast != null) {
+            slow = slow.next;
+            if(fast.next != null) fast = fast.next.next;
+            else break;
+            iterations++;
+            if(slow == head && slow == fast) return head;
+            else if(slow == fast) {
+                while(iterations-- >= 0) fast = fast.next;
+                // return iterations % 2 == 0 ? fast.next;
+            }
+        }
+        
+        return null;
+    }
+}

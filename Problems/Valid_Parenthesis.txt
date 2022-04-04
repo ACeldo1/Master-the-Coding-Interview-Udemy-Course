@@ -1,0 +1,45 @@
+/*
+for valid parenthesis, we need right brackets to close the left brackets.
+additionally, we can have a long continuous string of left brackets that go unclosed. we need to track all 
+of them until we either can prove that the str is not valid (mismatched parenthesis) or we enconuter their corresponding pairs
+
+approach 1: using a stack
+iterate through the string and we have are presented two choices
+if we have a left bracket, we push that bracket onto the stack
+if we encounter a right bracket, we need a valid parenthesis pair, so the last-known / corresponding left bracket is currently at the top of the stack. we pop the left bracket from the stack and compare it with 
+the current right bracket. if they complement each other, we continue. if they do not, we have an invalid str
+we have a valid str if the stack is empty (all left brackets were successfully matched) and we have no other
+chars to check in the str
+
+runtime: O(N) because we iterate through all the chars in the str
+space: O(N) bc worst case, we have all left brackets and add them all to the stack
+*/
+class Solution {
+    public boolean isValid(String s) {
+        
+        //edge cases
+        if(s.length() == 0) { return true; }
+        else if (s.length() % 2 != 0) { return false; }
+        
+        Stack<Character> leftBrackets = new Stack<Character>();
+        for(int i = 0; i < s.length(); i++) {
+            switch(s.charAt(i)) {
+                case '(':
+                    leftBrackets.push(')');
+                    break;
+                case '{':
+                    leftBrackets.push('}');
+                    break;
+                case '[':
+                    leftBrackets.push(']');
+                    break;
+                default:
+                    if(leftBrackets.isEmpty() || leftBrackets.pop() != s.charAt(i)) {
+                        return false;
+                    }
+            }
+        }
+        
+        return leftBrackets.isEmpty();
+    }
+}

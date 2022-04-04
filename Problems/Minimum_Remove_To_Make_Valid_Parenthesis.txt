@@ -1,0 +1,67 @@
+/*
+approach 1: use two stacks, onew ill be used to keep track of the indexes of the left brackets and the other will be used to mark the indexes in the string that need to be deleted (will require another iteration, however starting from the end this time around) 
+
+approach 2: same as above but i only leverage one stack that will as opposed to 2
+i use it with the String replace method, marking chars I want to delete with an *
+
+runtime for both O(N) since we iterate through all the chars in the string, and at the end when perfecting the string
+space for both: O(N) bc the stack holds at most N elements if we had all left brackets
+the string builder also will hold max N elements when creating the string for returning
+*/
+
+//i got the general solution to it, there are ways to simplify this though, including using a * to mark what needs to be deleted, the using the replace method on the string 
+class Solution {
+    //approach 1
+//     public String minRemoveToMakeValid(String s) {
+//         if(s.length() == 1) return s;
+        
+//         StringBuilder res = new StringBuilder();
+//         Stack<Integer> leftStack = new Stack<>();
+//         char[] arr = s.toCharArray();
+//         int i = 0;
+//         while(i < arr.length) {
+//             while(i < arr.length && arr[i] != '(' && arr[i] != ')') { //find a bracket first
+//                 res.append(arr[i++]);
+//             }
+            
+//             if(i >= arr.length) break;
+//             else if(arr[i] == '(') leftStack.push(res.length());
+//             else if(!leftStack.isEmpty()) leftStack.pop();
+//             else {
+//                 i++;
+//                 continue;
+//             }
+//             res.append(arr[i++]);   
+//         }
+        
+//         /*we need to delete the chars at the indexes that are in both stacks, the left stack 
+//         bc there was no complementary right bracket for them and the other stack is self explanatory*/
+//         while(!leftStack.isEmpty()) res.deleteCharAt(leftStack.pop());
+//         return res.toString();
+//     }
+    
+    //approach 2
+    public String minRemoveToMakeValid(String s) {
+        if(s.length() == 1) return s;
+        
+        Stack<Integer> leftStack = new Stack<>(); //will hold the indices of the left parenthesis
+        char[] arr = s.toCharArray(); //easier to work with
+        int i = 0;
+        while(i < arr.length) {
+            while(i < arr.length && arr[i] != '(' && arr[i] != ')') i++; //find a bracket first
+            
+            if(i >= arr.length) break; //out of bounds
+            else if(arr[i] == '(') leftStack.push(i); //left bracket found
+            else if(!leftStack.isEmpty()) leftStack.pop(); //corresponding parenthesis, do not modify
+            else arr[i] = '*'; //right bracket found, but it must be deleted
+            i++;
+        }
+        
+        /*we need to delete the chars at the indexes that are in both stacks, the left stack 
+        bc there was no complementary right bracket for them and the other stack is self explanatory*/
+        while(!leftStack.isEmpty()) arr[leftStack.pop()] = '*';
+        StringBuilder res = new StringBuilder();
+        for(char c: arr) if(c != '*') res.append(c);
+        return res.toString();
+    }
+}
